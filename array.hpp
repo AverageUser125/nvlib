@@ -14,7 +14,11 @@ namespace nv
 template <typename T>
 class _NV_NODISCARD array_iterator {
   public:
+#if _NV_HAS_CXX20
+	using iterator_category = std::contiguous_iterator_tag;
+#else
 	using iterator_category = std::random_access_iterator_tag;
+#endif
 	using value_type = T;
 	using pointer = T*;
 	using reference = T&;
