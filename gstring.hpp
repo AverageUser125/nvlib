@@ -48,13 +48,13 @@ class _NV_PACKED gstring {
 
 	  public:
 		using iterator_category = std::random_access_iterator_tag;
-		using size_type = gstring::size_type;
-		using difference_type = gstring::difference_type;
-		using value_type = gstring::value_type;
-		using pointer = gstring::pointer;
-		using const_pointer = gstring::const_pointer;
-		using reference = gstring::reference;
-		using const_reference = gstring::const_reference;
+		using size_type = size_t;
+		using difference_type = ptrdiff_t;
+		using value_type = char;
+		using pointer = const char*;
+		using const_pointer = const char*;
+		using reference = const char&;
+		using const_reference = const char&;
 
 		_NV_ALWAYS_INLINE gstring_iterator(gstring* s, size_t i) noexcept : str(s), index(i) {
 		}

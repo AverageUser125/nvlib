@@ -11,121 +11,133 @@
 
 namespace nv
 {
-template <typename T>
-class _NV_NODISCARD array_iterator {
-  public:
-#if _NV_HAS_CXX20
-	using iterator_category = std::contiguous_iterator_tag;
-#else
-	using iterator_category = std::random_access_iterator_tag;
-#endif
-	using value_type = T;
-	using pointer = T*;
-	using reference = T&;
-	using difference_type = std::ptrdiff_t;
-
-	_NV_ALWAYS_INLINE array_iterator(T* ptr) noexcept : ptr(ptr) {
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE reference operator*() const noexcept {
-		return *ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE pointer operator->() const noexcept {
-		return ptr;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator& operator++() noexcept {
-		++ptr;
-		return *this;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator operator++(int) noexcept {
-		array_iterator temp = *this;
-		++ptr;
-		return temp;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator& operator--() noexcept {
-		--ptr;
-		return *this;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator operator--(int) noexcept {
-		array_iterator temp = *this;
-		--ptr;
-		return temp;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE reference operator[](difference_type n) const noexcept {
-		return ptr[n];
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE array_iterator operator+(difference_type n) const noexcept {
-		return array_iterator(ptr + n);
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE array_iterator operator-(difference_type n) const noexcept {
-		return array_iterator(ptr - n);
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator==(const array_iterator& other) const noexcept {
-		return ptr == other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator!=(const array_iterator& other) const noexcept {
-		return ptr != other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<(const array_iterator& other) const noexcept {
-		return ptr < other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>(const array_iterator& other) const noexcept {
-		return ptr > other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<=(const array_iterator& other) const noexcept {
-		return ptr <= other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>=(const array_iterator& other) const noexcept {
-		return ptr >= other.ptr;
-	}
-
-	_NV_NODISCARD _NV_ALWAYS_INLINE difference_type operator-(const array_iterator& other) const noexcept {
-		return ptr - other.ptr;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator& operator+=(difference_type n) noexcept {
-		ptr += n;
-		return *this;
-	}
-
-	_NV_ALWAYS_INLINE array_iterator& operator-=(difference_type n) noexcept {
-		ptr -= n;
-		return *this;
-	}
-
-  private:
-	T* ptr;
-};
 
 template <typename T>
-class array {
+class _NV_PACKED array {
 	T* ptr;
 	size_t sz;
 
   public:
+	using size_type = size_t;
+	using difference_type = ptrdiff_t;
 	using value_type = T;
 	using pointer = T*;
 	using const_pointer = const T*;
 	using reference = T&;
 	using const_reference = const T&;
+
+	template <typename T>
+	class _NV_NODISCARD array_iterator {
+		T* ptr;
+
+	  public:
+#if _NV_HAS_CXX20
+		using iterator_category = std::contiguous_iterator_tag;
+#else
+		using iterator_category = std::random_access_iterator_tag;
+#endif
+		using size_type = size_t;
+		using difference_type = ptrdiff_t;
+		using value_type = T;
+		using pointer = T*;
+		using const_pointer = const T*;
+		using reference = T&;
+		using const_reference = const T&;
+
+		_NV_ALWAYS_INLINE array_iterator(T* ptr) noexcept : ptr(ptr) {
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE const_reference operator*() const noexcept {
+			return *ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE const_pointer operator->() const noexcept {
+			return ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE reference operator*() noexcept {
+			return *ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE pointer operator->() noexcept {
+			return ptr;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator& operator++() noexcept {
+			++ptr;
+			return *this;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator operator++(int) noexcept {
+			array_iterator temp = *this;
+			++ptr;
+			return temp;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator& operator--() noexcept {
+			--ptr;
+			return *this;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator operator--(int) noexcept {
+			array_iterator temp = *this;
+			--ptr;
+			return temp;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE reference operator[](difference_type n) const noexcept {
+			return ptr[n];
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE array_iterator operator+(difference_type n) const noexcept {
+			return array_iterator(ptr + n);
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE array_iterator operator-(difference_type n) const noexcept {
+			return array_iterator(ptr - n);
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator==(const array_iterator& other) const noexcept {
+			return ptr == other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator!=(const array_iterator& other) const noexcept {
+			return ptr != other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<(const array_iterator& other) const noexcept {
+			return ptr < other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>(const array_iterator& other) const noexcept {
+			return ptr > other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<=(const array_iterator& other) const noexcept {
+			return ptr <= other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>=(const array_iterator& other) const noexcept {
+			return ptr >= other.ptr;
+		}
+
+		_NV_NODISCARD _NV_ALWAYS_INLINE difference_type operator-(const array_iterator& other) const noexcept {
+			return ptr - other.ptr;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator& operator+=(difference_type n) noexcept {
+			ptr += n;
+			return *this;
+		}
+
+		_NV_ALWAYS_INLINE array_iterator& operator-=(difference_type n) noexcept {
+			ptr -= n;
+			return *this;
+		}
+	};
+
 	using iterator = array_iterator<T>;
 	using const_iterator = const array_iterator<T>;
-	using size_type = size_t;
-	using difference_type = ptrdiff_t;
 
 	_NV_ALWAYS_INLINE array() : sz(0), ptr(nullptr) {
 	}
@@ -359,5 +371,7 @@ class array {
 		assert(sz > 0);
 		return ptr[sz - 1];
 	}
-};
+} _NV_UNPACKED;
+
+_NV_UNPACKED
 }
