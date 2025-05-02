@@ -24,7 +24,7 @@ class punordered_map {
 	const entry* entries = nullptr;
 	size_type count = 0;
 
-	explicit punordered_map(const entry* _entries, size_type _count) : entries(_entries), count(_count) {
+	_NV_ALWAYS_INLINE punordered_map(const entry* _entries, size_type _count) : entries(_entries), count(_count) {
 	}
 
   public:
