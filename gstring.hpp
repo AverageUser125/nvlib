@@ -41,6 +41,7 @@ class _NV_PACKED gstring {
 	using const_pointer = const char*;
 	using reference = const char&;
 	using const_reference = const char&;
+	friend struct std::hash<gstring>;
 
 	class _NV_NODISCARD gstring_iterator {
 		const gstring* const str;
@@ -150,8 +151,8 @@ class _NV_PACKED gstring {
 			memcpy(data.buf, str, sz);
 		} else {
 			memcpy(data.prefix, str, sizeof(data.prefix));
-			data.ptr = new char[size - sizeof(data.prefix)];
-			memcpy(data.ptr, str + sizeof(data.prefix), size - sizeof(data.prefix));
+			data.ptr = new char[sz - sizeof(data.prefix)];
+			memcpy(data.ptr, str + sizeof(data.prefix), sz - sizeof(data.prefix));
 		}
 	}
 
@@ -398,3 +399,27 @@ class _NV_PACKED gstring {
 
 _NV_UNPACKED
 }
+
+template <>
+struct _NV_NODISCARD std::hash<nv::gstring> {
+	_NV_ALWAYS_INLINE size_t operator()(const nv::gstring& s) const noexcept {
+		if (s.size() <= 12) {
+#if _NV_HAS_CXX17
+
+			return std::hash<std::string_view>()(std::string_view(s.data.buf, s.size()));
+#else
+			return hash<std::string>()(std::string(s.data.buf, s.size()));
+#endif
+		} else {
+#if _NV_HAS_CXX17
+			size_t prefix_hash = std::hash<std::string_view>()(std::string_view(s.data.prefix, sizeof(s.data.prefix)));
+			size_t data_hash =
+				std::hash<std::string_view>()(std::string_view(s.data.ptr, s.size() - sizeof(s.data.prefix)));
+#else
+			size_t prefix_hash = hash<std::string>()(std::string(s.data.prefix, sizeof(s.data.prefix)));
+			size_t data_hash = hash<std::string>()(std::string(s.data.ptr, s.size() - sizeof(s.data.prefix)));
+#endif
+			return prefix_hash ^ (data_hash + 0x9e3779b9 + (prefix_hash << 6) + (prefix_hash >> 2));
+		}
+	}
+};
