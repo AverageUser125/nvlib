@@ -1,0 +1,25 @@
+# Visual Studio stuff
+*/.vs
+build/
+bin/
+/out
+.idea/
+Makefile
+/*.user
+.localhistory/
+.vshistory/
+*/obj
+# Visual Studio Code stuff
+.history/
+.vscode/*
+*.code-workspace
+
+# other
+*.log
+*.txt
+*.user
+*.sqlite
+*.db
+*.pdb
+*.lib
+*.exe
