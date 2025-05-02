@@ -8,7 +8,6 @@ Makefile
 /*.user
 .localhistory/
 .vshistory/
-*/obj
 # Visual Studio Code stuff
 .history/
 .vscode/*
@@ -23,3 +22,5 @@ Makefile
 *.pdb
 *.lib
 *.exe
+*.obj
+*.o
