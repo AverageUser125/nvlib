@@ -43,7 +43,7 @@ class _NV_PACKED gstring {
 	using const_reference = const char&;
 
 	class _NV_NODISCARD gstring_iterator {
-		gstring* const str;
+		const gstring* const str;
 		size_t index;
 
 	  public:
@@ -56,14 +56,10 @@ class _NV_PACKED gstring {
 		using reference = const char&;
 		using const_reference = const char&;
 
-		_NV_ALWAYS_INLINE gstring_iterator(gstring* s, size_t i) noexcept : str(s), index(i) {
+		_NV_ALWAYS_INLINE gstring_iterator(const gstring* s, size_t i) noexcept : str(s), index(i) {
 		}
 
-		_NV_ALWAYS_INLINE reference operator*() noexcept {
-			return str->at(index);
-		}
-
-		_NV_ALWAYS_INLINE value_type operator*() const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE value_type operator*() const noexcept {
 			return ((const gstring*)str)->at(index);
 		}
 
@@ -85,7 +81,7 @@ class _NV_PACKED gstring {
 			return gstring_iterator(str, index--);
 		}
 
-		_NV_ALWAYS_INLINE gstring_iterator operator+(difference_type n) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE gstring_iterator operator+(difference_type n) const noexcept {
 			return gstring_iterator(str, index + n);
 		}
 
@@ -94,7 +90,7 @@ class _NV_PACKED gstring {
 			return *this;
 		}
 
-		_NV_ALWAYS_INLINE gstring_iterator operator-(difference_type n) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE gstring_iterator operator-(difference_type n) const noexcept {
 			return gstring_iterator(str, index - n);
 		}
 
@@ -103,35 +99,35 @@ class _NV_PACKED gstring {
 			return *this;
 		}
 
-		_NV_ALWAYS_INLINE difference_type operator-(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE difference_type operator-(const gstring_iterator& other) const noexcept {
 			return index - other.index;
 		}
 
-		_NV_ALWAYS_INLINE reference operator[](difference_type n) const noexcept {
-			return *(*this + n);
+		_NV_NODISCARD _NV_ALWAYS_INLINE value_type operator[](difference_type n) const noexcept {
+			return str->at(index + n);
 		}
 
-		_NV_ALWAYS_INLINE bool operator==(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator==(const gstring_iterator& other) const noexcept {
 			return index == other.index;
 		}
 
-		_NV_ALWAYS_INLINE bool operator!=(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator!=(const gstring_iterator& other) const noexcept {
 			return index != other.index;
 		}
 
-		_NV_ALWAYS_INLINE bool operator<(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<(const gstring_iterator& other) const noexcept {
 			return index < other.index;
 		}
 
-		_NV_ALWAYS_INLINE bool operator<=(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator<=(const gstring_iterator& other) const noexcept {
 			return index <= other.index;
 		}
 
-		_NV_ALWAYS_INLINE bool operator>(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>(const gstring_iterator& other) const noexcept {
 			return index > other.index;
 		}
 
-		_NV_ALWAYS_INLINE bool operator>=(const gstring_iterator& other) const noexcept {
+		_NV_NODISCARD _NV_ALWAYS_INLINE bool operator>=(const gstring_iterator& other) const noexcept {
 			return index >= other.index;
 		}
 	};
@@ -181,7 +177,7 @@ class _NV_PACKED gstring {
 		memset(other.data.buf, 0, sizeof(other.data.buf));
 	}
 
-	gstring& operator=(const gstring& other) noexcept {
+	_NV_ALWAYS_INLINE gstring& operator=(const gstring& other) noexcept {
 		if (this != &other) {
 			if (sz > sizeof(data.buf)) {
 				delete[] data.ptr;
@@ -199,7 +195,7 @@ class _NV_PACKED gstring {
 		return *this;
 	}
 
-	gstring& operator=(gstring&& other) noexcept {
+	_NV_ALWAYS_INLINE gstring& operator=(gstring&& other) noexcept {
 		if (this != &other) {
 			if (sz > sizeof(data.buf))
 				delete[] data.ptr;
@@ -214,11 +210,11 @@ class _NV_PACKED gstring {
 	_NV_ALWAYS_INLINE gstring(const std::string_view str) noexcept : gstring(str.data(), str.size()) {
 	}
 #endif
-	size_t size() const noexcept {
+	_NV_NODISCARD size_t size() const noexcept {
 		return (size_t)sz;
 	}
 
-	char& at(size_t index) {
+	_NV_NODISCARD _NV_ALWAYS_INLINE char at(size_t index) const {
 		assert(index < sz);
 		if (sz <= sizeof(data.buf))
 			return data.buf[index];
@@ -227,24 +223,11 @@ class _NV_PACKED gstring {
 		return data.ptr[index - sizeof(data.prefix)];
 	}
 
-	char at(size_t index) const {
-		assert(index < sz);
-		if (sz <= sizeof(data.buf))
-			return data.buf[index];
-		if (index < sizeof(data.prefix))
-			return data.prefix[index];
-		return data.ptr[index - sizeof(data.prefix)];
-	}
-
-	char& operator[](size_t index) noexcept {
+	_NV_NODISCARD _NV_ALWAYS_INLINE char operator[](size_t index) const noexcept {
 		return at(index);
 	}
 
-	char operator[](size_t index) const noexcept {
-		return at(index);
-	}
-
-	int compare(const gstring& other) const {
+	_NV_NODISCARD int compare(const gstring& other) const {
 		size_t minSize = sz < other.sz ? sz : other.sz;
 
 		if (sz <= sizeof(data.buf)) {
@@ -288,7 +271,7 @@ class _NV_PACKED gstring {
 		return sz < other.sz ? -1 : 1;
 	}
 
-	int compare(const char* other, size_t other_size) const {
+	_NV_NODISCARD int compare(const char* other, size_t other_size) const {
 		size_t minSize = sz < other_size ? sz : other_size;
 
 		if (sz <= sizeof(data.buf)) {
@@ -312,51 +295,51 @@ class _NV_PACKED gstring {
 		return sz < other_size ? -1 : 1;
 	}
 
-	int compare(const char* other) const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE int compare(const char* other) const {
 		return compare(other, strlen(other));
 	}
 
-	int compare(const std::string& other) const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE int compare(const std::string& other) const {
 		return compare(other.data(), other.size());
 	}
 
 #define DEFINE_COMPARISON_OPERATORS_1(OtherType)                                                                       \
-	friend bool operator==(const gstring& a, OtherType b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator==(const gstring& a, OtherType b) {                            \
 		return a.compare(b) == 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator!=(const gstring& a, OtherType b) {                                                            \
+	_NV_NODISCARD friend bool operator!=(const gstring& a, OtherType b) {                                              \
 		return a.compare(b) != 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator<(const gstring& a, OtherType b) {                                                             \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator<(const gstring& a, OtherType b) {                             \
 		return a.compare(b) < 0;                                                                                       \
 	}                                                                                                                  \
-	friend bool operator<=(const gstring& a, OtherType b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator<=(const gstring& a, OtherType b) {                            \
 		return a.compare(b) <= 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator>(const gstring& a, OtherType b) {                                                             \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator>(const gstring& a, OtherType b) {                             \
 		return a.compare(b) > 0;                                                                                       \
 	}                                                                                                                  \
-	friend bool operator>=(const gstring& a, OtherType b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator>=(const gstring& a, OtherType b) {                            \
 		return a.compare(b) >= 0;                                                                                      \
 	}
 #define DEFINE_COMPARISON_OPERATORS(OtherType)                                                                         \
 	DEFINE_COMPARISON_OPERATORS_1(OtherType)                                                                           \
-	friend bool operator==(OtherType a, const gstring& b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator==(OtherType a, const gstring& b) {                            \
 		return b.compare(a) == 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator!=(OtherType a, const gstring& b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator!=(OtherType a, const gstring& b) {                            \
 		return b.compare(a) != 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator<(OtherType a, const gstring& b) {                                                             \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator<(OtherType a, const gstring& b) {                             \
 		return b.compare(a) > 0;                                                                                       \
 	}                                                                                                                  \
-	friend bool operator<=(OtherType a, const gstring& b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator<=(OtherType a, const gstring& b) {                            \
 		return b.compare(a) >= 0;                                                                                      \
 	}                                                                                                                  \
-	friend bool operator>(OtherType a, const gstring& b) {                                                             \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator>(OtherType a, const gstring& b) {                             \
 		return b.compare(a) < 0;                                                                                       \
 	}                                                                                                                  \
-	friend bool operator>=(OtherType a, const gstring& b) {                                                            \
+	_NV_NODISCARD _NV_ALWAYS_INLINE friend bool operator>=(OtherType a, const gstring& b) {                            \
 		return b.compare(a) <= 0;                                                                                      \
 	}
 
@@ -367,42 +350,42 @@ class _NV_PACKED gstring {
 #if _NV_HAS_CXX17
 	DEFINE_COMPARISON_OPERATORS(const std::string_view)
 
-	int compare(const std::string_view other) const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE int compare(const std::string_view other) const {
 		return compare(other.data(), other.size());
 	}
 #endif
 
-	iterator begin() {
+	_NV_NODISCARD _NV_ALWAYS_INLINE iterator begin() {
 		return iterator(this, 0);
 	}
 
-	iterator end() {
+	_NV_NODISCARD _NV_ALWAYS_INLINE iterator end() {
 		return iterator(this, sz);
 	}
 
-	const_iterator begin() const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator begin() const {
 		return cbegin();
 	}
 
-	const_iterator end() const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator end() const {
 		return cend();
 	}
 
-	const_iterator cbegin() const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator cbegin() const {
 		return gstring_iterator((gstring*)this, 0);
 	}
 
-	const_iterator cend() const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator cend() const {
 		return gstring_iterator((gstring*)this, sz);
 	}
 
-	std::string toStdString() const {
+	_NV_NODISCARD _NV_ALWAYS_INLINE std::string toStdString() const {
 		if (sz <= sizeof(data.buf))
 			return std::string(data.buf, sz);
 		return std::string(data.prefix, sizeof(data.prefix)) + std::string(data.ptr, sz - sizeof(data.prefix));
 	}
 
-	friend std::ostream& operator<<(std::ostream& os, const gstring& str) {
+	_NV_ALWAYS_INLINE friend std::ostream& operator<<(std::ostream& os, const gstring& str) {
 		if (str.sz <= sizeof(data.buf)) {
 			os.write(str.data.buf, str.sz);
 		} else {

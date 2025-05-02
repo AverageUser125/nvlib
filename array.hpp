@@ -26,7 +26,6 @@ class _NV_PACKED array {
 	using reference = T&;
 	using const_reference = const T&;
 
-	template <typename T>
 	class _NV_NODISCARD array_iterator {
 		T* ptr;
 
@@ -136,8 +135,8 @@ class _NV_PACKED array {
 		}
 	};
 
-	using iterator = array_iterator<T>;
-	using const_iterator = const array_iterator<T>;
+	using iterator = array_iterator;
+	using const_iterator = const array_iterator;
 
 	_NV_ALWAYS_INLINE array() : sz(0), ptr(nullptr) {
 	}
