@@ -8,3 +8,6 @@ Some container I built for C++ that I couldn't find elsewhere.
 - lru_cache: least recently used cache
 - punordered_map: a hash table implemenetation given a perfect hash function
 - trie: a tree data structure for fast searching of strings and prefixes
+
+# Other
+- SSocket: some templates to shorten socket function calls with WinSock2
