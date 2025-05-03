@@ -211,7 +211,7 @@ class _NV_PACKED gstring {
 	_NV_ALWAYS_INLINE gstring(const std::string_view str) noexcept : gstring(str.data(), str.size()) {
 	}
 #endif
-	_NV_NODISCARD size_t size() const noexcept {
+	_NV_NODISCARD _NV_ALWAYS_INLINE size_t size() const noexcept {
 		return (size_t)sz;
 	}
 

@@ -336,11 +336,11 @@ class _NV_PACKED array {
 	}
 
 	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator begin() const noexcept {
-		return ptr;
+		return cbegin();
 	}
 
 	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator end() const noexcept {
-		return ptr + sz;
+		return cend();
 	}
 
 	_NV_NODISCARD _NV_ALWAYS_INLINE const_iterator cbegin() const noexcept {
